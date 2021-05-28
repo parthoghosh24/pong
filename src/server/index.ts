@@ -6,16 +6,23 @@ import express from 'express'
 import cors from 'cors'
 import PongRoom from './rooms/PongRoom'
 
-const port = process.env.port || 3000;
-const app = express();
-app.use(express.json());
+const port = Number(process.env.port || 3000)
+const app = express()
+
 app.use(cors())
+app.use(express.json())
+
+
 const gameServer = new Server({
   server: createServer(app)
 });
 
+//Regisger rooms
 gameServer.define('pong_room', PongRoom)
-app.use('/colyseus', monitor());
+
+//Monitor
+app.use('/colyseus', monitor())
+
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${port}`)
 

@@ -12,12 +12,29 @@ const PLAYER1_SCORE = "0"
 const PLAYER2_SCORE = "0"
 const MAX_SET_COUNT = 5
 
-export default class GameScene extends Phaser.Scene
+export default class OfflineScene extends Phaser.Scene
 {
-  
+    private ball
+    private player1
+    private player2
+    private cursors
+    private gameStarted
+    private keys
+    private player1WinText
+    private player2WinText
+    private player1ScoreText
+    private player2ScoreText
+    private player1Score
+    private player2Score
+    private playerWinSound
+    private gameOverSound
+    private boopSound
+    private line
+    private setCount
+
   constructor()
   {
-    super('game-scene')
+    super('offline-scene')
     this.ball = undefined
     this.player1 = undefined
     this.player2 = undefined
@@ -41,7 +58,7 @@ export default class GameScene extends Phaser.Scene
 
     this.line = undefined
 
-    this.set_count = 0
+    this.setCount = 0
     
   }
 

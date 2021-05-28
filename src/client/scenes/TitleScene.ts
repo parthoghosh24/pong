@@ -9,6 +9,13 @@ const MAIN_MENU_SOUND = "main_Menu_sound"
 export default class TitleScene extends Phaser.Scene
 {
 
+  private titleText
+  private offlineText
+  private onlineText
+  private helpText
+  private mainMenuSound
+  
+
   constructor()
   {
     super('title-scene')
@@ -17,6 +24,11 @@ export default class TitleScene extends Phaser.Scene
     this.onlineText = undefined
     this.helpText = undefined
     this.mainMenuSound = undefined
+  }
+
+  init()
+  {
+    
   }
 
   preload()
@@ -51,6 +63,11 @@ export default class TitleScene extends Phaser.Scene
       this.onlineText.setColor('gray')
     })
 
+    this.onlineText.on('pointerdown', () =>{
+      this.mainMenuSound.stop()
+      this.scene.launch('online-scene')
+    })
+
     this.helpText.on('pointerover', () =>{
       this.helpText.setColor('gray')
     })
@@ -69,7 +86,7 @@ export default class TitleScene extends Phaser.Scene
 
     this.offlineText.on('pointerdown', () =>{
       this.mainMenuSound.stop()
-      this.scene.start('game-scene')
+      this.scene.start('offline-scene')
     })
 
     this.mainMenuSound = this.sound.add(MAIN_MENU_SOUND)

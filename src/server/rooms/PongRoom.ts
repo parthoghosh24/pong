@@ -1,19 +1,13 @@
-import {Room} from 'colyseus'
+import { Room } from 'colyseus'
 import { PongGameState } from './schema/PongGameState'
-
-export default class PongRoom extends Room
+export default class PongRoom extends Room<PongGameState>
 {
   maxClients = 2
   
   onCreate()
   {
+    
     this.setState(new PongGameState())
-
-    this.onMessage('keydown', (client, message)=>{
-      this.broadcast('keydown', message,{
-        except: client
-      })
-    })
     
   }
 

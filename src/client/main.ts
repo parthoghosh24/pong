@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
 import TitleScene from	'./scenes/TitleScene'
-import GameScene from './scenes/GameScene'
+import OfflineScene from './scenes/OfflineScene'
+import OnlineScene from './scenes/OnlineScene'
+import HelpScene from './scenes/HelpScene'
 
 const config = {
 	type: Phaser.AUTO,
@@ -17,7 +19,7 @@ const config = {
 			gravity: { y: 50 }
 		}
 	},
-	scene: [ TitleScene, GameScene]
+	scene: [ TitleScene, OfflineScene, OnlineScene, HelpScene ]
 }
 
 export default new Phaser.Game(config)
