@@ -94,8 +94,11 @@ export default class OfflineScene extends Phaser.Scene
     this.keys.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
     this.player1WinText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, PLAYER1_WINS)
     this.player1WinText.setOrigin(0.5)
+    this.player1WinText.setBackgroundColor('black')
+
     this.player2WinText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, PLAYER2_WINS)
     this.player2WinText.setOrigin(0.5)
+    this.player2WinText.setBackgroundColor('black')
 
     this.player1ScoreText = this.add.text(this.physics.world.bounds.width/2 - 120, 50, ""+this.player1Score)
     this.player1ScoreText.setFontSize(100)
@@ -118,10 +121,6 @@ export default class OfflineScene extends Phaser.Scene
 
   update()
   {
-    if(this.scene.isPaused())
-    {
-      return
-    }
     if(!this.gameStarted)
     {
       const initialVelocityX = (Math.random() * 150) + 200
@@ -224,7 +223,7 @@ export default class OfflineScene extends Phaser.Scene
 
   createPlayer(playerCount = 1)
   {
-    let player = undefined
+    var player
     if(playerCount == 1)
     {
       player =this.physics.add.sprite((this.ball.width/2 + 1),this.physics.world.bounds.height/2, PADDLE_KEY)

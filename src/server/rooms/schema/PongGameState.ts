@@ -1,7 +1,20 @@
-import {Schema, type} from '@colyseus/schema'
+import {Schema, ArraySchema, type} from '@colyseus/schema'
+import IPongGameState from '../../../types/IPongGameState'
 
-export class PongGameState extends Schema
+export class PongGameState extends Schema implements IPongGameState
 {
-  @type("string")
-  name = "Hello from Pong backend"
+  @type(['number'])
+  ball: ArraySchema<number>
+
+  @type('number')
+  activePlayer = 0
+
+  @type('boolean')
+  gameStarted = false
+
+  constructor()
+  {
+    super()
+    this.ball = new ArraySchema(0,0)
+  }
 }

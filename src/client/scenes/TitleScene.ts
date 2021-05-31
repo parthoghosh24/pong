@@ -26,11 +26,6 @@ export default class TitleScene extends Phaser.Scene
     this.mainMenuSound = undefined
   }
 
-  init()
-  {
-    
-  }
-
   preload()
   {
     this.load.audio(MAIN_MENU_SOUND, ['assets/sounds/main_menu.mp3'])
@@ -65,7 +60,7 @@ export default class TitleScene extends Phaser.Scene
 
     this.onlineText.on('pointerdown', () =>{
       this.mainMenuSound.stop()
-      this.scene.launch('online-scene')
+      this.scene.start('online-menu')
     })
 
     this.helpText.on('pointerover', () =>{
