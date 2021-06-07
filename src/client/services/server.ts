@@ -18,6 +18,11 @@ export default class Server
       this.events = new Phaser.Events.EventEmitter()
   }
 
+  get sessionId()
+  {
+    return this.room?.sessionId
+  }
+
   async join()
   {
     this.room = await this.client.joinOrCreate<IPongGameState & Schema>('pong_room')
@@ -27,38 +32,54 @@ export default class Server
     })
 
     this.room.state.onChange = (changes) =>{
+      // console.log(changes)
       changes.forEach(change =>{
-        console.dir(`change ${change}`)
         const {field, value} = change
-        console.log(`field ${field}`)
-        console.log(`value ${value}`)
-        switch(field)
+        var playerMap = {field: field, value: value}
+        if(field === 'player1PaddleY' || field === 'player2PaddleY')
         {
-          case 'ball':
-            this.events.emit('on-ball-update', value)
-            break
+          this.events.emit('paddle-update', playerMap)
+        }
+        if(field === 'ball')
+        {
+          this.events.emit('ball-update', value)
         }
       })
     }
   }
 
-  onDrawUpdate(velocityX: number, velocityY: number)
+  onPlayerPress(direction: string, activePlayer: number, paddleY: number)
   {
     if(!this.room)
     {
       return
     }
 
-    this.room.send(Message.BallUpdated, {velocityX: velocityX, velocityY: velocityY})
+    this.room.send(Message.PlayerPressed, {direction: direction, activePlayer: activePlayer, paddleY: paddleY})
   }
 
-  onceStateChanged(cb: (state: IPongGameState )=> void, context?: any)
+  onceStateChanged(cb: ( state: IPongGameState )=> void, context?: any)
   {
     this.events.once('once-state-changed', cb, context)
   }
 
-  onBallUpdate(cb: (velocityX: number, velocityY: number)=> void, context?: any)
+  onPaddleUpdate(cb: (playerMap: {field: string, value: number}) => void, context?: any)
   {
-    this.events.on('on-ball-update', cb, context)
+    this.events.on('paddle-update', cb, context)
+  }
+
+  handleBallUpdate(ballX: number, ballY: number)
+  {
+    if(!this.room)
+    {
+      return
+    }
+
+    this.room.send(Message.BallUpdated, {ballX: ballX, ballY: ballY})
+  }
+
+  onBallUpdate(cb: (ball:[number, number]) =>void, context?: any)
+  {
+    this.events.on('ball-update', cb, context)  
   }
 }

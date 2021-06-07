@@ -1,4 +1,7 @@
 export enum Message
 {
-  BallUpdated
+  BallUpdated,
+  ScoreUpdated,
+  PlayerPressed,
+  PlayerJoined,
 }

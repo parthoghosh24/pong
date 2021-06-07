@@ -86,7 +86,7 @@ export default class TitleScene extends Phaser.Scene
 
     this.mainMenuSound = this.sound.add(MAIN_MENU_SOUND)
     var mainMenuSoundConfig = {mute: false, volume: 0.5, loop: true, detune: 25}
-    this.mainMenuSound.play(mainMenuSoundConfig)
+    // this.mainMenuSound.play(mainMenuSoundConfig)
   }
 
   update()

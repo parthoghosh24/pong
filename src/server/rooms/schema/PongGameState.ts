@@ -12,9 +12,26 @@ export class PongGameState extends Schema implements IPongGameState
   @type('boolean')
   gameStarted = false
 
+  @type('string')
+  direction = ''
+
+  @type(['string'])
+  playerSessions: ArraySchema<string>
+
+  @type(['number'])
+  playerNumbers: ArraySchema<number>
+
+  @type('number')
+  player1PaddleY = 0
+
+  @type('number')
+  player2PaddleY = 0
+
   constructor()
   {
     super()
-    this.ball = new ArraySchema(0,0)
+    this.ball = new ArraySchema((Math.random() * 150) + 200,(Math.random() * 150) + 200)
+    this.playerSessions = new ArraySchema('', '')
+    this.playerNumbers = new ArraySchema(0,0)
   }
 }

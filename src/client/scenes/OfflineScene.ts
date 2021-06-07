@@ -20,7 +20,7 @@ export default class OfflineScene extends Phaser.Scene
     private cursors
     private gameStarted
     private keys
-    private player1WinText
+    private player1WinText?: Phaser.GameObjects.Text
     private player2WinText
     private player1ScoreText
     private player2ScoreText
@@ -74,9 +74,9 @@ export default class OfflineScene extends Phaser.Scene
   create()
   {
     this.ball = this.createBall()
-    
-    this.player1 = this.createPlayer(1)
     this.boopSound = this.sound.add(BOOP_SOUND)
+    this.player1 = this.createPlayer(1)
+    
     
     this.physics.add.collider(this.player1,this.ball, ()=>{
         this.boopSound.play()
@@ -95,6 +95,7 @@ export default class OfflineScene extends Phaser.Scene
     this.player1WinText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, PLAYER1_WINS)
     this.player1WinText.setOrigin(0.5)
     this.player1WinText.setBackgroundColor('black')
+    this.player1WinText.setDepth(100)
 
     this.player2WinText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, PLAYER2_WINS)
     this.player2WinText.setOrigin(0.5)
@@ -121,14 +122,8 @@ export default class OfflineScene extends Phaser.Scene
 
   update()
   {
-    if(!this.gameStarted)
-    {
-      const initialVelocityX = (Math.random() * 150) + 200
-      const initialVelocityY = (Math.random() * 150) + 200
-      this.ball.setVelocityX(initialVelocityX)
-      this.ball.setVelocityY(initialVelocityY)
-      this.gameStarted = true
-    }
+    this.player1.body.setVelocityY(0)
+    this.player2.body.setVelocityY(0)
 
     if(this.ball.body.x > this.player2.body.x)
     {
@@ -139,7 +134,7 @@ export default class OfflineScene extends Phaser.Scene
       this.player1ScoreText.setText(""+this.player1Score)
       if(this.player1Score == MAX_SET_COUNT)
       {
-        this.player1WinText.setVisible(true)
+        this.player1WinText?.setVisible(true)
         this.scene.pause()
         this.gameOverSound.play()
         return
@@ -176,7 +171,7 @@ export default class OfflineScene extends Phaser.Scene
       }, 2000)
     }
     
-    this.player2.body.setVelocityY(0)
+    
     if(this.cursors.down.isDown)
     {
       this.player2.setVelocityY(PADDLE_SPEED)
@@ -191,7 +186,7 @@ export default class OfflineScene extends Phaser.Scene
       this.ball.setVelocityY(PADDLE_SPEED)
     }
 
-    this.player1.body.setVelocityY(0)
+    
     if(this.keys.s.isDown)
     {
       this.player1.body.setVelocityY(PADDLE_SPEED)
@@ -217,6 +212,10 @@ export default class OfflineScene extends Phaser.Scene
     const ball = this.physics.add.sprite(this.physics.world.bounds.width/2,this.physics.world.bounds.height/2, BALL_KEY)
     ball.setCollideWorldBounds(true)
     ball.setBounce(1,1)
+    const initialVelocityX = (Math.random() * 150) + 200
+      const initialVelocityY = (Math.random() * 150) + 200
+      ball.setVelocityX(initialVelocityX)
+      ball.setVelocityY(initialVelocityY)
     
     return ball
   }
