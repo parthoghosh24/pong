@@ -4,8 +4,6 @@ export interface IPongGameState
 
   activePlayer: number
 
-  gameStarted: boolean
-
   direction: string  
 
   playerSessions: string[]
@@ -15,6 +13,14 @@ export interface IPongGameState
   player1PaddleY: number
 
   player2PaddleY: number
+
+  player1Score: number
+
+  player2Score: number
+
+  playerWin: number
+
+  playersJoined: number
 
 }
 

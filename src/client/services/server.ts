@@ -32,23 +32,39 @@ export default class Server
     })
 
     this.room.state.onChange = (changes) =>{
-      // console.log(changes)
       changes.forEach(change =>{
         const {field, value} = change
-        var playerMap = {field: field, value: value}
+        var changeValueMap = {field: field, value: value}
         if(field === 'player1PaddleY' || field === 'player2PaddleY')
         {
-          this.events.emit('paddle-update', playerMap)
+          this.events.emit('paddle-update', changeValueMap)
         }
         if(field === 'ball')
         {
+          console.log('hit')
           this.events.emit('ball-update', value)
+        }
+
+        if(field === 'player1Score')
+        {
+          changeValueMap = {field: field, value: value}
+          this.events.emit('player-score-update', changeValueMap)
+        }
+        if(field === 'player2Score')
+        {
+          changeValueMap = {field: field, value: value}
+          this.events.emit('player-score-update', changeValueMap)
+        }
+        if(field === 'playersJoined')
+        {
+          changeValueMap = {field: field, value: value}
+          this.events.emit('player-joined', changeValueMap)
         }
       })
     }
   }
 
-  onPlayerPress(direction: string, activePlayer: number, paddleY: number)
+  handlePlayerPress(direction: string, activePlayer: number, paddleY: number)
   {
     if(!this.room)
     {
@@ -81,5 +97,24 @@ export default class Server
   onBallUpdate(cb: (ball:[number, number]) =>void, context?: any)
   {
     this.events.on('ball-update', cb, context)  
+  }
+
+  handlePlayerScore(playerScore: number, playerNumber: number)
+  {
+    if(!this.room)
+    {
+      return
+    }
+    this.room.send(Message.ScoreUpdated, {playerScore: playerScore, playerNumber: playerNumber})
+  }
+
+  onPlayerScoreUpdate(cb: (scoreMap: {field: string, value: number})=>void, context?: any)
+  {
+    this.events.on('player-score-update', cb, context)
+  }
+
+  onPlayersJoined(cb: (joinedMap: {field: string, value: number})=>void, context?: any)
+  {
+    this.events.on('player-joined', cb, context)
   }
 }

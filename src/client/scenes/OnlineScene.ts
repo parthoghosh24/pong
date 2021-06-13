@@ -7,6 +7,7 @@ const BALL_KEY = "ball"
 const PADDLE_SPEED = 350
 const PLAYER1_WINS = "Player 1 wins!"
 const PLAYER2_WINS = "Player 2 wins!"
+const WAITING_FOR_PLAYER = "Waiting for Player..."
 const PLAYER_WIN_SOUND = "player_win_sound"
 const GAME_OVER_SOUND = "game_over_sound"
 const BOOP_SOUND = "boop_sound"
@@ -28,14 +29,16 @@ export default class OnlineScene extends Phaser.Scene
   private player2WinText?: Phaser.GameObjects.Text
   private player1ScoreText?: Phaser.GameObjects.Text
   private player2ScoreText?: Phaser.GameObjects.Text
-  private player1Score: Number
-  private player2Score: Number
+  private player1Score: number
+  private player2Score: number
   private playerWinSound
   private gameOverSound
   private boopSound
   private line
   private setCount
   private currentPlayer
+  private waitingForPlayer?: Phaser.GameObjects.Text
+  private playersJoined? : Boolean
 
   constructor()
   {
@@ -65,7 +68,8 @@ export default class OnlineScene extends Phaser.Scene
 
     this.setCount = 0
     this.currentPlayer = {}
-    
+    this.waitingForPlayer = undefined
+    this.playersJoined = false
   }
 
   init()
@@ -104,94 +108,126 @@ export default class OnlineScene extends Phaser.Scene
         this.player2?.setY(playerMap.value)
       }
     })
+
     this.server.onBallUpdate((ball: [number, number])=>{
-      this.ball?.setX(ball[0])
-      this.ball?.setY(ball[1])
+      if(this.ball)
+      {
+        this.ball.setVelocityX(ball[0])
+        this.ball.setVelocityY(ball[1])
+      }
+    })
+
+    this.server.onPlayerScoreUpdate((scoreMap: {field: string, value: number})=>{
+      if(scoreMap.value>0)
+      {
+        if(scoreMap.field ==='player1Score')
+        {
+          
+          this.player1ScoreText.setText(""+scoreMap.value)
+          // if(this.player1Score == MAX_SET_COUNT)
+          // {
+          //   this.player1WinText?.setVisible(true)
+          //   this.scene.pause()
+          //   this.gameOverSound.play()
+          //   return
+          // }
+        }
+        else if(scoreMap.field ==='player2Score')
+        {
+          this.player2ScoreText.setText(""+scoreMap.value)
+          
+          // if(this.player2Score == MAX_SET_COUNT)
+          // {
+          //   this.player2WinText?.setVisible(true)
+          //   this.scene.pause()
+          //   this.gameOverSound.play()
+          //   return
+          // }
+        }
+        // this.scene.setActive(false)
+        this.playerWinSound.play()
+
+        // setTimeout(()=>{
+        //   this.scene.restart()
+        // }, 2000)
+        
+        
+        // this.time.delayedCall(500, ()=>{
+          // console.log('hi')
+          this.ball.setX(this.physics.world.bounds.width/2)
+        this.ball?.setY(this.physics.world.bounds.height/2)
+        this.ball?.setVelocityX((Math.random() * 150) + 200)
+        this.ball?.setVelocityY((Math.random() * 150) + 200)
+        
+        this.player1.setX(this.ball?.width/2 + 1)
+        this.player1.setY(this.physics.world.bounds.height/2)
+
+        this.player2.setX(this.physics.world.bounds.width - (this.ball?.width/2 + 1))
+        this.player2.setY(this.physics.world.bounds.height/2)
+
+        this.player1?.body?.setVelocityY(PADDLE_SPEED)
+        this.player2?.body?.setVelocityY(PADDLE_SPEED)
+        this.scene.resume()
+
+        // }, undefined, this)
+
+        
+
+        
+
+        // this.scene.restart()
+        // setTimeout(()=>{
+        //   this.scene.restart()
+        // }, 2000)
+      }
+    })
+
+    this.server.onPlayersJoined((joinedMap: {field: string, value: number})=>{
+      if(joinedMap.value >= 2)
+      {
+        this.playersJoined = true
+
+        if(this.currentPlayer.playerNumber === 1)
+        {
+          this.waitingForPlayer?.setVisible(false)
+          this.scene.resume()
+        }
+      }
     })
   }
 
   async update()
   {
+    if(this.scene.isPaused())
+    {
+      return
+    }
     this.resetPlayerPaddleSpeed()
     this.normalizeBallSpeed()
-    // console.log(`ball speed ${this.ball?.body.x, this.ball?.body.y}`)
-    if(this.ball !== undefined)
-    {
-      this.server.handleBallUpdate(this.ball?.body.x, this.ball?.body.y)
-    }
-    // this.server.onPaddleUpdate((field: string, value: number)=>{
-    //   console.log('oyeee')
-    //   if(field.includes("1") && this.currentPlayer.playerNumber !== 1)
-    //   {
-    //     this.player1?.setY(value)
-        // if(direction === 'up')
-        // {
-        //   this.player1?.body.setVelocityY(-PADDLE_SPEED)
-        // }
-        // else
-        // {
-        //   this.player1?.body.setVelocityY(PADDLE_SPEED)
-        // }
-      // }
-
-      // if(activePlayer === 2 && sessionId !== this.currentPlayer.sessionId)
-      // {
-      //   if(direction === 'up')
-      //   {
-      //     this.player2?.body.setVelocityY(-PADDLE_SPEED)
-      //   }
-      //   else
-      //   {
-      //     this.player2?.body.setVelocityY(PADDLE_SPEED)
-      //   }
-      // }
-      
-    // })
     this.handleControls()
-
-    // if(this.ball?.body?.x > this.player2?.body?.x)
-    // {
-      
-    //   this.ball?.setVelocityX(0)
-    //   this.ball?.setVelocityY(0)
-    //   this.player1Score+=1
-    //   this.player1ScoreText.setText(""+this.player1Score)
-    //   if(this.player1Score == MAX_SET_COUNT)
-    //   {
-    //     this.player1WinText?.setVisible(true)
-    //     this.scene.pause()
-    //     this.gameOverSound.play()
-    //     return
-    //   }
-    //   this.scene.setActive(false)
-    //   this.playerWinSound.play()
-    //   this.gameStarted = false
-    //   setTimeout(()=>{
-    //     this.scene.restart()
-    //   }, 2000) 
-    // }
+    if(this.ball && this.ball.body)
+    {
+      this.server.handleBallUpdate(this.ball?.body.velocity.x, this.ball?.body.velocity.y)
+    }
     
-    // if(this.ball?.body?.x < this.player1?.body?.x)
-    // {
-    //   this.ball?.setVelocityX(0)
-    //   this.ball?.setVelocityY(0)
-    //   this.player2Score+=1
-    //   this.player2ScoreText.setText(""+this.player2Score)
-    //   if(this.player2Score == MAX_SET_COUNT)
-    //   {
-    //     this.player2WinText.setVisible(true)
-    //     this.scene.pause()
-    //     this.gameOverSound.play()
-    //     return
-    //   }
-    //   this.scene.setActive(false)
-    //   this.playerWinSound.play()
-    //   this.gameStarted = false
-    //   setTimeout(()=>{
-    //     this.scene.restart()
-    //   }, 2000)
-    // }
-
+    if(this.ball && this.ball?.body?.x > this.player2?.body?.x)
+    {
+      
+      this.ball?.setVelocityX(0)
+      this.ball?.setVelocityY(0)
+      this.player1Score+=1
+      this.scene.pause()
+      this.server.handlePlayerScore(this.player1Score,1) 
+    }
+    
+    if(this.ball && this.ball?.body?.x < this.player1?.body?.x)
+    {
+      this.ball?.setVelocityX(0)
+      this.ball?.setVelocityY(0)
+      this.player2Score+=1
+      this.scene.pause()
+      this.server.handlePlayerScore(this.player2Score,2)
+    }
   }
 
   private resetPlayerPaddleSpeed()
@@ -209,12 +245,12 @@ export default class OnlineScene extends Phaser.Scene
         if(this.keys?.w?.isDown)
         {
           this.player1.setVelocityY(-PADDLE_SPEED)
-          this.server.onPlayerPress('up',1, this.player1?.body.y)
+          this.server.handlePlayerPress('up',1, this.player1?.y)
         }
         else if(this.keys?.s?.isDown)
         {
           this.player1.setVelocityY(PADDLE_SPEED)
-          this.server.onPlayerPress('down', 1, this.player1?.body.y)
+          this.server.handlePlayerPress('down', 1, this.player1?.y)
         }
       }
       else
@@ -222,12 +258,12 @@ export default class OnlineScene extends Phaser.Scene
         if(this.cursors?.up?.isDown)
         {
           this.player2.setVelocityY(-PADDLE_SPEED)
-          this.server.onPlayerPress('up',2, this.player2?.body.y)
+          this.server.handlePlayerPress('up',2, this.player2?.y)
         }
         else if(this.cursors?.down?.isDown)
         {
           this.player2.setVelocityY(PADDLE_SPEED)
-          this.server.onPlayerPress('down', 2, this.player2?.body.y)
+          this.server.handlePlayerPress('down', 2, this.player2?.y)
         }
       }
     }
@@ -253,17 +289,28 @@ export default class OnlineScene extends Phaser.Scene
     this.currentPlayer.playerSessionId = this.server.sessionId
     this.currentPlayer.playerNumber = state.playerNumbers[playerId]
     this.createSounds()
-    this.gameStarted = state.gameStarted
-    
-    this.createBall(state)
-    this.player1 = this.createPlayer(1)
-    this.player2 = this.createPlayer(2)
-    this.addColliders()
     this.createKeys()
     this.createLine()
     this.createWinText()
     this.createScoreText()
-    
+
+    this.waitingForPlayer = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2, WAITING_FOR_PLAYER)
+    this.waitingForPlayer.setOrigin(0.5)
+    this.waitingForPlayer.setBackgroundColor('black')
+    if(this.playersJoined)
+    {
+      this.waitingForPlayer?.setVisible(false)
+      this.scene.resume()
+    }
+    else
+    {
+      this.scene.pause()
+      this.waitingForPlayer.setVisible(true)
+    }
+    this.createBall(state)
+    this.player1 = this.createPlayer(1)
+    this.player2 = this.createPlayer(2)
+    this.addColliders()
   }
 
   private addColliders()

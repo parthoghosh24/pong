@@ -33,16 +33,16 @@ export default class OnlineMenu extends Phaser.Scene
     this.joinText.setOrigin(0.5)
     this.joinText.setFontSize(25)
 
-    this.createText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2+120, CREATE_TEXT)
-    this.createText.setOrigin(0.5)
-    this.createText.setFontSize(25)
+    // this.createText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2+120, CREATE_TEXT)
+    // this.createText.setOrigin(0.5)
+    // this.createText.setFontSize(25)
 
-    this.backText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2+190, BACK_TEXT)
+    this.backText = this.add.text(this.physics.world.bounds.width/2, this.physics.world.bounds.height/2+120, BACK_TEXT)
     this.backText.setOrigin(0.5)
     this.backText.setFontSize(25)
 
     this.joinText.setInteractive()
-    this.createText.setInteractive()
+    // this.createText.setInteractive()
     this.backText.setInteractive()
 
     this.joinText.on('pointerover', () =>{
@@ -58,13 +58,13 @@ export default class OnlineMenu extends Phaser.Scene
       this.scene.start('online-scene')
     })
 
-    this.createText.on('pointerover', () =>{
-      this.createText.setColor('gray')
-    })
+    // this.createText.on('pointerover', () =>{
+    //   this.createText.setColor('gray')
+    // })
 
-    this.createText.on('pointerout', () =>{
-      this.createText.setColor('white') 
-    })
+    // this.createText.on('pointerout', () =>{
+    //   this.createText.setColor('white') 
+    // })
 
     this.backText.on('pointerover', () =>{
       this.backText .setColor('gray')

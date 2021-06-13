@@ -9,9 +9,6 @@ export class PongGameState extends Schema implements IPongGameState
   @type('number')
   activePlayer = 0
 
-  @type('boolean')
-  gameStarted = false
-
   @type('string')
   direction = ''
 
@@ -26,6 +23,18 @@ export class PongGameState extends Schema implements IPongGameState
 
   @type('number')
   player2PaddleY = 0
+
+  @type('number')
+  player1Score = 0
+
+  @type('number')
+  player2Score = 0
+
+  @type('number')
+  playerWin = 0
+
+  @type('number')
+  playersJoined = 0
 
   constructor()
   {
