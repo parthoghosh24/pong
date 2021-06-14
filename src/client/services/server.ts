@@ -60,6 +60,11 @@ export default class Server
           changeValueMap = {field: field, value: value}
           this.events.emit('player-joined', changeValueMap)
         }
+        if(field === 'playerWin')
+        {
+          console.log('win')
+          this.events.emit('player-win', value)
+        }
       })
     }
   }
@@ -116,5 +121,10 @@ export default class Server
   onPlayersJoined(cb: (joinedMap: {field: string, value: number})=>void, context?: any)
   {
     this.events.on('player-joined', cb, context)
+  }
+
+  onPlayerWin(cb:(playerWin: number)=>void, context?: any)
+  {
+    this.events.on('player-win', cb, context)
   }
 }

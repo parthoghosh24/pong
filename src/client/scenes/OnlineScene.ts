@@ -122,42 +122,18 @@ export default class OnlineScene extends Phaser.Scene
       {
         if(scoreMap.field ==='player1Score')
         {
-          
           this.player1ScoreText.setText(""+scoreMap.value)
-          // if(this.player1Score == MAX_SET_COUNT)
-          // {
-          //   this.player1WinText?.setVisible(true)
-          //   this.scene.pause()
-          //   this.gameOverSound.play()
-          //   return
-          // }
         }
         else if(scoreMap.field ==='player2Score')
         {
           this.player2ScoreText.setText(""+scoreMap.value)
-          
-          // if(this.player2Score == MAX_SET_COUNT)
-          // {
-          //   this.player2WinText?.setVisible(true)
-          //   this.scene.pause()
-          //   this.gameOverSound.play()
-          //   return
-          // }
         }
-        // this.scene.setActive(false)
         this.playerWinSound.play()
-
-        // setTimeout(()=>{
-        //   this.scene.restart()
-        // }, 2000)
-        
-        
-        // this.time.delayedCall(500, ()=>{
-          // console.log('hi')
-          this.ball.setX(this.physics.world.bounds.width/2)
+      
+        this.ball.setX(this.physics.world.bounds.width/2)
         this.ball?.setY(this.physics.world.bounds.height/2)
-        this.ball?.setVelocityX((Math.random() * 150) + 200)
-        this.ball?.setVelocityY((Math.random() * 150) + 200)
+        this.ball?.setVelocityX(PADDLE_SPEED)
+        this.ball?.setVelocityY(PADDLE_SPEED)
         
         this.player1.setX(this.ball?.width/2 + 1)
         this.player1.setY(this.physics.world.bounds.height/2)
@@ -168,17 +144,7 @@ export default class OnlineScene extends Phaser.Scene
         this.player1?.body?.setVelocityY(PADDLE_SPEED)
         this.player2?.body?.setVelocityY(PADDLE_SPEED)
         this.scene.resume()
-
-        // }, undefined, this)
-
-        
-
-        
-
-        // this.scene.restart()
-        // setTimeout(()=>{
-        //   this.scene.restart()
-        // }, 2000)
+          
       }
     })
 
@@ -192,6 +158,27 @@ export default class OnlineScene extends Phaser.Scene
           this.waitingForPlayer?.setVisible(false)
           this.scene.resume()
         }
+      }
+    })
+
+    this.server.onPlayerWin((playerWin: number)=>{
+      if(playerWin > 0)
+      {
+        if(playerWin === 1)
+        {
+          this.player1WinText?.setVisible(true)
+          this.scene.pause()
+          this.gameOverSound.play()
+          return
+        }
+        else if(playerWin === 2)
+        {
+          this.player2WinText?.setVisible(true)
+          this.scene.pause()
+          this.gameOverSound.play()
+          return
+        }
+          
       }
     })
   }
@@ -215,7 +202,6 @@ export default class OnlineScene extends Phaser.Scene
       
       this.ball?.setVelocityX(0)
       this.ball?.setVelocityY(0)
-      this.player1Score+=1
       this.scene.pause()
       this.server.handlePlayerScore(this.player1Score,1) 
     }
@@ -224,7 +210,6 @@ export default class OnlineScene extends Phaser.Scene
     {
       this.ball?.setVelocityX(0)
       this.ball?.setVelocityY(0)
-      this.player2Score+=1
       this.scene.pause()
       this.server.handlePlayerScore(this.player2Score,2)
     }
