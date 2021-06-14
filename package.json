@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "parcel src/client/index.html -p 8000",
 		"start-server": "ts-node-dev --project tsconfig.server.json src/server/index.ts",
-		"build": "parcel build src/client/index.html --dist-dir dist && npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib && node node_modules/copyfiles/copyfiles -u 1 src/static/* ./lib",
+		"build": "parcel build src/client/index.html --out-dir dist && npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib && node node_modules/copyfiles/copyfiles -u 1 src/static/* ./lib",
 		"clean": "node node_modules/rimraf/bin lib",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
@@ -42,8 +42,7 @@
 		"colyseus.js": "^0.14.12",
 		"cors": "^2.8.5",
 		"express": "^4.16.4",
-		"parcel": "^2.0.0-beta.2",
-
+		"parcel-bundler": "^1.12.5",
 		"phaser": "^3.50.1",
 		"regenerator-runtime": "^0.13.7",
 		"serve-index": "^1.8.0",
