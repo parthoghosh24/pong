@@ -5,6 +5,9 @@ import {createServer} from 'http'
 import express from 'express'
 import cors from 'cors'
 import PongRoom from './rooms/PongRoom'
+import serveIndex from 'serve-index'
+
+import path from 'path'
 
 const port = Number(process.env.port || 3000)
 const app = express()
@@ -19,6 +22,10 @@ const gameServer = new Server({
 
 //Regisger rooms
 gameServer.define('pong_room', PongRoom)
+
+
+app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
+app.use('/', express.static(path.join(__dirname, "static")));
 
 //Monitor
 app.use('/colyseus', monitor())
