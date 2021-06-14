@@ -23,7 +23,6 @@ export default class OnlineScene extends Phaser.Scene
   private player1?: Phaser.Physics.Arcade.Sprite
   private player2?: Phaser.Physics.Arcade.Sprite
   private cursors
-  private gameStarted
   private keys
   private player1WinText?: Phaser.GameObjects.Text
   private player2WinText?: Phaser.GameObjects.Text
@@ -34,8 +33,6 @@ export default class OnlineScene extends Phaser.Scene
   private playerWinSound
   private gameOverSound
   private boopSound
-  private line
-  private setCount
   private currentPlayer
   private waitingForPlayer?: Phaser.GameObjects.Text
   private playersJoined? : Boolean
@@ -43,12 +40,7 @@ export default class OnlineScene extends Phaser.Scene
   constructor()
   {
     super('online-scene')
-    this.ball = undefined
-    this.player1 = undefined
-    this.player2 = undefined
     this.cursors = undefined
-
-    this.gameStarted = false
 
     this.keys = {}
 
@@ -64,9 +56,6 @@ export default class OnlineScene extends Phaser.Scene
     this.gameOverSound = undefined
     this.boopSound = undefined
 
-    this.line = undefined
-
-    this.setCount = 0
     this.currentPlayer = {}
     this.waitingForPlayer = undefined
     this.playersJoined = false
@@ -122,28 +111,32 @@ export default class OnlineScene extends Phaser.Scene
       {
         if(scoreMap.field ==='player1Score')
         {
-          this.player1ScoreText.setText(""+scoreMap.value)
+          this.player1ScoreText?.setText(""+scoreMap.value)
         }
         else if(scoreMap.field ==='player2Score')
         {
-          this.player2ScoreText.setText(""+scoreMap.value)
+          this.player2ScoreText?.setText(""+scoreMap.value)
         }
         this.playerWinSound.play()
       
-        this.ball.setX(this.physics.world.bounds.width/2)
-        this.ball?.setY(this.physics.world.bounds.height/2)
-        this.ball?.setVelocityX(PADDLE_SPEED)
-        this.ball?.setVelocityY(PADDLE_SPEED)
+        if(this.ball)
+        {
+          this.ball?.setX(this.physics.world.bounds.width/2)
+          this.ball?.setY(this.physics.world.bounds.height/2)
+          this.ball?.setVelocityX(PADDLE_SPEED)
+          this.ball?.setVelocityY(PADDLE_SPEED)
+          
+          this.player1?.setX(this.ball?.width/2 + 1)
+          this.player1?.setY(this.physics.world.bounds.height/2)
+
+          this.player2?.setX(this.physics.world.bounds.width - (this.ball?.width/2 + 1))
+          this.player2?.setY(this.physics.world.bounds.height/2)
+
+          this.player1?.setVelocityY(PADDLE_SPEED)
+          this.player2?.setVelocityY(PADDLE_SPEED)
+          this.scene.resume()
+        }
         
-        this.player1.setX(this.ball?.width/2 + 1)
-        this.player1.setY(this.physics.world.bounds.height/2)
-
-        this.player2.setX(this.physics.world.bounds.width - (this.ball?.width/2 + 1))
-        this.player2.setY(this.physics.world.bounds.height/2)
-
-        this.player1?.body?.setVelocityY(PADDLE_SPEED)
-        this.player2?.body?.setVelocityY(PADDLE_SPEED)
-        this.scene.resume()
           
       }
     })
@@ -197,7 +190,7 @@ export default class OnlineScene extends Phaser.Scene
       this.server.handleBallUpdate(this.ball?.body.velocity.x, this.ball?.body.velocity.y)
     }
     
-    if(this.ball && this.ball?.body?.x > this.player2?.body?.x)
+    if(this.ball && this.player2 && this.ball?.body?.x > this.player2?.body?.x)
     {
       
       this.ball?.setVelocityX(0)
@@ -206,7 +199,7 @@ export default class OnlineScene extends Phaser.Scene
       this.server.handlePlayerScore(this.player1Score,1) 
     }
     
-    if(this.ball && this.ball?.body?.x < this.player1?.body?.x)
+    if(this.ball && this.player1 && this.ball?.body?.x < this.player1?.body?.x)
     {
       this.ball?.setVelocityX(0)
       this.ball?.setVelocityY(0)
@@ -217,53 +210,60 @@ export default class OnlineScene extends Phaser.Scene
 
   private resetPlayerPaddleSpeed()
   {
-    this.player1?.body?.setVelocityY(0)
-    this.player2?.body?.setVelocityY(0)
+    this.player1?.setVelocityY(0)
+    this.player2?.setVelocityY(0)
   }
 
   private handleControls()
   {
     if(this.currentPlayer.playerSessionId === this.server.sessionId)
     {
-      if(this.currentPlayer.playerNumber === 1)
+      if(this.currentPlayer.playerNumber === 1 && this.player1)
       {
         if(this.keys?.w?.isDown)
         {
-          this.player1.setVelocityY(-PADDLE_SPEED)
+          this.player1?.setVelocityY(-PADDLE_SPEED)
           this.server.handlePlayerPress('up',1, this.player1?.y)
         }
         else if(this.keys?.s?.isDown)
         {
-          this.player1.setVelocityY(PADDLE_SPEED)
+          this.player1?.setVelocityY(PADDLE_SPEED)
           this.server.handlePlayerPress('down', 1, this.player1?.y)
         }
       }
       else
       {
-        if(this.cursors?.up?.isDown)
+        if(this.player2)
         {
-          this.player2.setVelocityY(-PADDLE_SPEED)
-          this.server.handlePlayerPress('up',2, this.player2?.y)
+          if(this.cursors?.up?.isDown)
+          {
+            this.player2.setVelocityY(-PADDLE_SPEED)
+            this.server.handlePlayerPress('up',2, this.player2?.y)
+          }
+          else if(this.cursors?.down?.isDown)
+          {
+            this.player2.setVelocityY(PADDLE_SPEED)
+            this.server.handlePlayerPress('down', 2, this.player2?.y)
+          }
         }
-        else if(this.cursors?.down?.isDown)
-        {
-          this.player2.setVelocityY(PADDLE_SPEED)
-          this.server.handlePlayerPress('down', 2, this.player2?.y)
-        }
+        
       }
     }
   }
 
   private normalizeBallSpeed()
   {
-    if(this.ball?.body?.velocity?.y > PADDLE_SPEED)
+    if(this.ball)
     {
-      this.ball.setVelocityY(PADDLE_SPEED)
-    }
+      if(this.ball?.body?.velocity?.y > PADDLE_SPEED)
+      {
+        this.ball.setVelocityY(PADDLE_SPEED)
+      }
 
-    if(this.ball?.body?.velocity?.y < -PADDLE_SPEED)
-    {
-      this.ball.setVelocityY(-PADDLE_SPEED)
+      if(this.ball?.body?.velocity?.y < -PADDLE_SPEED)
+      {
+        this.ball.setVelocityY(-PADDLE_SPEED)
+      }
     }
   }
 
@@ -300,12 +300,22 @@ export default class OnlineScene extends Phaser.Scene
 
   private addColliders()
   {
-    this.physics.add.collider(this.player1,this.ball, ()=>{
-      this.boopSound.play()
-    })
-    this.physics.add.collider(this.player2,this.ball, ()=>{
-      this.boopSound.play()
-    })
+    if(this.ball)
+    {
+      if(this.player1)
+      {
+        this.physics.add.collider(this.player1,this.ball, ()=>{
+          this.boopSound.play()
+        })
+      }
+
+      if(this.player2)
+      {
+        this.physics.add.collider(this.player2,this.ball, ()=>{
+          this.boopSound.play()
+        })
+      }
+    }
   }
 
   private createSounds()
@@ -354,13 +364,15 @@ export default class OnlineScene extends Phaser.Scene
   private createPlayer(playerCount = 1)
   {
     var player
+    let ballWidth = this.ball !== undefined ? this.ball?.width : 0
     if(playerCount == 1)
     {
-      player =this.physics.add.sprite((this.ball?.width/2 + 1),this.physics.world.bounds.height/2, PADDLE_KEY)
+      
+      player =this.physics.add.sprite((ballWidth/2 + 1),this.physics.world.bounds.height/2, PADDLE_KEY)
     }
     else
     {
-      player = this.physics.add.sprite(this.physics.world.bounds.width - (this.ball?.width/2 + 1),this.physics.world.bounds.height/2, PADDLE_KEY)
+      player = this.physics.add.sprite(this.physics.world.bounds.width - (ballWidth/2 + 1),this.physics.world.bounds.height/2, PADDLE_KEY)
     }
     player.setImmovable(true)
     player.setCollideWorldBounds(true)
