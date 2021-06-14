@@ -67,6 +67,11 @@ export default class TitleScene extends Phaser.Scene
       this.helpText.setColor('gray')
     })
 
+    this.helpText.on('pointerdown', () =>{
+      this.mainMenuSound.stop()
+      this.scene.start('help')
+    })
+
     this.offlineText.on('pointerout', () =>{
       this.offlineText.setColor('white')
     })
