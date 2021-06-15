@@ -12,7 +12,8 @@
 		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
 	},
 	"engines": {
-    "node": ">=8.9.1"
+    "node": ">=15.13.0",
+		"npm": ">=7.7.6"
   },
 	"author": "Partho Ghosh",
 	"license": "MIT",
