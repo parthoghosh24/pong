@@ -9,7 +9,7 @@ import serveIndex from 'serve-index'
 
 import path from 'path'
 
-const port = Number(process.env.port || 3000)
+const port = Number(process.env.PORT || 3000)
 const app = express()
 
 app.use(cors())
