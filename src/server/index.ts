@@ -24,7 +24,7 @@ const gameServer = new Server({
 gameServer.define('pong_room', PongRoom)
 
 
-app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
+app.use('/', serveIndex(path.join(__dirname, "server/static"), {'icons': true}))
 app.use('/', express.static(path.join(__dirname, "static")));
 
 //Monitor
