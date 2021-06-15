@@ -2,17 +2,19 @@
 	"name": "Re-Pong",
 	"version": "0.0.1",
 	"description": "The classic Pong game with new features",
-	"main": "lib/static/server/index.html",
+	"main": "lib/server/static/index.js",
 	"scripts": {
-		"start": "parcel src/client/index.html -p 8000",
-		"start-server": "ts-node-dev --project tsconfig.server.json src/server/index.ts",
-		"build": "parcel build src/client/index.html --out-dir dist && npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib && node node_modules/copyfiles/copyfiles -u 1 src/server/static/* ./lib",
+		"start": "ts-node-dev --project tsconfig.server.json src/server/index.ts",
+		"start-client":"parcel src/client/index.html -p 8000",
+		"build-client":"parcel build src/client/index.html --out-dir src/server/static",
+		"build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib && node node_modules/copyfiles/copyfiles -u 1 src/server/static/** ./lib && node node_modules/copyfiles/copyfiles -u 1 src/server/static/assets/* ./lib && node node_modules/copyfiles/copyfiles -u 1 src/server/static/assets/sounds/* ./lib",
 		"clean": "node node_modules/rimraf/bin lib",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
 	},
 	"engines": {
-    "node": ">=8.9.1"
+    "node": ">=15.13.0",
+		"npm": ">=7.7.6"
   },
 	"author": "Partho Ghosh",
 	"license": "MIT",
