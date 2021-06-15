@@ -14,7 +14,8 @@ export default class Server
 
   constructor()
   {
-      this.client = new Client('ws://localhost:3000')
+      let host = window.document.location.host.replace(/:.*/, '');
+      this.client = new Client(location.protocol.replace("http", "ws") + "//" + host + (location.port ? ':'+location.port : ''))
       this.events = new Phaser.Events.EventEmitter()
   }
 
