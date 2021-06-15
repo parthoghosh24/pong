@@ -28,15 +28,15 @@
 		"babel-eslint": "^10.1.0",
 		"copyfiles": "^2.4.1",
 		"eslint": "^6.8.0",
-		"minimist": ">=1.2.2",
+		"minimist": ">=1.2.2"
+	},
+	"dependencies": {
 		"parcel-plugin-clean-easy": "^1.0.2",
 		"parcel-plugin-static-files-copy": "^2.4.3",
 		"rimraf": "^2.7.1",
 		"ts-node": "^8.1.0",
 		"ts-node-dev": "^1.0.0-pre.63",
-		"typescript": "^3.8.3"
-	},
-	"dependencies": {
+		"typescript": "^3.8.3",
 		"@colyseus/command": "^0.1.6",
 		"@colyseus/monitor": "^0.14.0",
 		"colyseus": "^0.14.0",
